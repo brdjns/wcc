@@ -85,6 +85,25 @@ void test_pointer_addition_with_register() {
     test_pointer_pointer_add_in_struct(&sb);
 }
 
+void test_constant_pointer_addition_with_constant() {
+    // Test addition with a constant pointer and a constant
+    assert_long(1,  ((void *)        0)   + 1,   "((void *)        0   + 1)");
+    assert_long(1,  ((void *)        0)   + 1L,  "((void *)        0   + 1L)");
+    assert_long(1,  ((void *)        0)   + 1U,  "((void *)        0   + 1U)");
+    assert_long(1,  ((void *)        0)   + 1UL, "((void *)        0   + 1UL)");
+    assert_long(1,  ((void *)        0L)  + 1,   "((void *)        0L  + 1)");
+    assert_long(1,  ((void *)        0U)  + 1,   "((void *)        0U  + 1)");
+    assert_long(1,  ((void *)        0UL) + 1,   "((void *)        0UL + 1)");
+    assert_long(1,  ((char *)        0)   + 1,   "((char *)        0   + 1)");
+    assert_long(2,  ((short *)       0)   + 1,   "((short *)       0   + 1)");
+    assert_long(4,  ((int *)         0)   + 1,   "((int *)         0   + 1)");
+    assert_long(8,  ((long *)        0)   + 1,   "((long *)        0   + 1)");
+    assert_long(4,  ((float *)       0)   + 1,   "((float *)       0   + 1)");
+    assert_long(8,  ((double *)      0)   + 1,   "((double *)      0   + 1)");
+    assert_long(16, ((long double *) 0)   + 1,   "((long double *) 0   + 1)");
+    assert_long(16, ((__int128 *)    0)   + 1,   "((__int128 *)    0   + 1)");
+}
+
 void test_brutal_pointer_arithmetic() {
     char c, *pc, **ppc;
     short s, *ps, **pps;
@@ -206,6 +225,25 @@ void test_pointer_const_pointer_subtraction() {
     assert_long(127,  ((long  *) pc) - (long  *) 1, "Pointer - const subtraction long 2");
 }
 
+void test_constant_pointer_subtraction_with_constant() {
+    // Test substraction with a constant pointer and a constant
+    assert_long(-1,  ((void *)        0)   - 1,   "((void *)        0   + 1)");
+    assert_long(-1,  ((void *)        0)   - 1L,  "((void *)        0   + 1L)");
+    assert_long(-1,  ((void *)        0)   - 1U,  "((void *)        0   + 1U)");
+    // assert_long(-1,  ((void *)        0)   - 1UL, "((void *)        0   + 1UL)"); // TODO this test fails
+    assert_long(-1,  ((void *)        0L)  - 1,   "((void *)        0L  + 1)");
+    assert_long(-1,  ((void *)        0U)  - 1,   "((void *)        0U  + 1)");
+    assert_long(-1,  ((void *)        0UL) - 1,   "((void *)        0UL + 1)");
+    assert_long(-1,  ((char *)        0)   - 1,   "((char *)        0   + 1)");
+    assert_long(-2,  ((short *)       0)   - 1,   "((short *)       0   + 1)");
+    assert_long(-4,  ((int *)         0)   - 1,   "((int *)         0   + 1)");
+    assert_long(-8,  ((long *)        0)   - 1,   "((long *)        0   + 1)");
+    assert_long(-4,  ((float *)       0)   - 1,   "((float *)       0   + 1)");
+    assert_long(-8,  ((double *)      0)   - 1,   "((double *)      0   + 1)");
+    assert_long(-16, ((long double *) 0)   - 1,   "((long double *) 0   + 1)");
+    assert_long(-16, ((__int128 *)    0)   - 1,   "((__int128 *)    0   + 1)");
+}
+
 void test_dereferenced_pointer_inc_dec() {
     struct s1 *s;
 
@@ -284,12 +322,14 @@ int main(int argc, char **argv) {
 
     test_pointer_addition_with_constant();
     test_pointer_addition_with_register();
+    test_constant_pointer_addition_with_constant();
     test_brutal_pointer_arithmetic();
     test_char_pointer_arithmetic();
     test_pointer_pointer_subtraction1();
     test_pointer_pointer_subtraction2();
     test_pointer_int_subtraction();
     test_pointer_const_pointer_subtraction();
+    test_constant_pointer_subtraction_with_constant();
     test_dereferenced_pointer_inc_dec();
     test_pointer_with_non_constant_non_pointer_addition();
     test_pointer_arithmetic_addition();

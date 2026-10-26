@@ -416,16 +416,20 @@ static void add_int_bitshift_rules(void) {
     add_two_operand_rules("lsr", RU1, RU1, XR, IR_BSHR, AARCH64_OP_LSR, 3); // unsigned r >> r
 }
 
-static void add_pointer_plus_int_rule(int dst, int src) {
-    Rule *r = add_rule(dst, IR_ADD, dst, src, 11);
+static void add_pointer_plus_int_rule(int dst, int src1, int src2) {
+    Rule *r = add_rule(dst, IR_ADD, src1, src2, 11);
     add_op(r, AARCH64_OP_ADD, DST, SRC1, SRC2, "add %vdx, %v1x, %v2x");
 }
 
 static void add_pointer_add_rules(void) {
     for (int i = RP1; i <= RP5; i++) {
-        add_pointer_plus_int_rule(i, CADDSUB);
-        add_pointer_plus_int_rule(i, RU4); // Pointer arithmetic with an integer always happens on RU4
+        add_pointer_plus_int_rule(i, i, CADDSUB);
+        add_pointer_plus_int_rule(i, i, RU4); // Pointer arithmetic with an integer always happens on RU4
     }
+
+    // For ((type *) c1) + c2
+    for (int i = RP1; i <= RP5; i++)
+        add_pointer_plus_int_rule(i, RI4, RU4);
 }
 
 static Rule *add_sub_rule(int dst, int src1, int src2) {
@@ -441,10 +445,16 @@ static void add_pointer_sub_rules(void) {
         add_sub_rule(i, i, XRU);
     }
 
+    // Pointer - int subtraction
     for (int i = RP1; i <= RP5; i++) {
         add_sub_rule(i, i, CADDSUB);
         add_sub_rule(i, i, RU4); // Pointer arithmetic with an integer always happens on RU4
     }
+
+    // For ((type *) c1) - c2
+    for (int i = RP1; i <= RP5; i++)
+        add_sub_rule(i, RI4, RU4);
+
 
     Rule *r = add_sub_rule(RI4, XRP, RU4); fin_rule(r);
 

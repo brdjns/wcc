@@ -1183,18 +1183,23 @@ static void add_commutative_operation_rules(char *x86_operand, int operation, in
     // For simplicity, no rules are present for quads & constants, forcing the constant into a register.
 }
 
-static void add_pointer_plus_int_rule(int dst, int src, int cost, int x86_operation) {
-    Rule *r = add_rule(dst, IR_ADD, dst, src, cost);
+static void add_pointer_plus_int_rule(int dst, int src1, int src2, int cost, int x86_operation) {
+    Rule *r = add_rule(dst, IR_ADD, src1, src2, cost);
     add_op(r, X86_OP_MOV, DST, SRC1, 0, "movq %v1q, %vdq");
-    add_op(r, x86_operation, DST,  SRC2, DST, "addq %v1q, %v2q");
+    add_op(r, x86_operation, DST, SRC2, DST, "addq %v1q, %v2q");
 }
 
 static void add_pointer_add_rules(void) {
     for (int i = RP1; i <= RP5; i++)
-        add_pointer_plus_int_rule(i, RU4, 10, X86_OP_ADD);
+        add_pointer_plus_int_rule(i, i, RU4, 10, X86_OP_ADD);
 
     for (int i = CI1; i <= CI4; i++)
         add_bi_directional_commutative_operation_rules(IR_ADD, X86_OP_MOV, X86_OP_ADD, XRP, i, XRP, 10, "movq %v1q, %vdq", "addq $%v1q, %v2q");
+
+    // For ((type *) c1) + c2
+    for (int i = RP1; i <= RP5; i++)
+        add_pointer_plus_int_rule(i, RI4, RU4, 10, X86_OP_ADD);
+
 }
 
 static void add_sub_rule(int dst, int src1, int src2, int cost, char *mov_template, char *sign_extend_template, char *sub_template) {
@@ -1232,6 +1237,9 @@ static void add_sub_rules(void) {
     for (int i = RP1; i <= RP5; i++)
         add_sub_rule(i, i, RU4, 10, "movq %v1q, %vdq", 0, "subq %v1q, %vdq");
 
+    // For ((type *) c1) - c2
+    for (int i = RP1; i <= RP5; i++)
+        add_sub_rule(i, RI4, RU4, 10, "movq %v1q, %vdq", 0, "subq %v1q, %vdq");
 
     // Pointer - pointer subtraction
     // The result of a pointer-pointer subtraction is always a signed long: RI4.
