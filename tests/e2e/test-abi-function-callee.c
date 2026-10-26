@@ -647,6 +647,10 @@ void set_sei(int i) { sei = i; }
 
 int extern_global_int;
 
+// Test a bug where a double extern declaration becomes a tentative definition
+extern int double_extern;
+extern int double_extern;
+
 int extern_renamed_func(int i) {
     return i + 1;
 }

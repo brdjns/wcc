@@ -3948,8 +3948,9 @@ void parse(void) {
                     // The object has no storage. This may change later if another declaration or definition comes along.
                     symbol->definition_status = DEFINITION_STATUS_NONE;
                 }
-                else {
-                    // Set the storage to tentative. This may change if a definition comes along later
+                else if (!has_extern_keyword) {
+                    // Set the storage to tentative. This may change if a definition comes along later.
+                    // Ignore a potential extern declaration.
                     symbol->definition_status = DEFINITION_STATUS_TENTATIVE;
                 }
 

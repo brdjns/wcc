@@ -11,6 +11,10 @@ int failures;
 
 struct sffff gsffff;
 
+// Test a bug where a double extern declaration becomes a tentative definition
+extern int double_extern;
+extern int double_extern;
+
 // No test is present for a redeclared symbol with default extern and later extern, but this must compile without errors.
 void redeclared_extern(int size);
 extern void redeclared_extern (int __size);
