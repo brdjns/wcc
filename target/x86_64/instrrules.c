@@ -91,6 +91,9 @@ int match_value_to_rule_src(Value *v, int src) {
     if (v->is_constant) {
         int vtt = v->type->type;
 
+        // Treat a pointer as a long. This happens with constants cast to pointers.
+        if (vtt == TYPE_PTR) vtt = TYPE_LONG;
+
         if (vtt == TYPE_FLOAT)
             return src == CO3;
         else if (vtt == TYPE_DOUBLE)
@@ -118,8 +121,8 @@ int match_value_to_rule_src(Value *v, int src) {
             else if (src >= CI3 && src <= CI4 && !v->type->is_unsigned && v->int_value >= -0x80000000l && v->int_value < 0x80000000l) return 1;
             else if (              src == CI4 && !v->type->is_unsigned)                                                               return 1;
 
-            else if (src >= CU1 && src <= CU4 &&  v->type->is_unsigned && v->int_value >= 0 && v->int_value < 0x100      ) return 1;
-            else if (src >= CU2 && src <= CU4 &&  v->type->is_unsigned && v->int_value >= 0 && v->int_value < 0x100000   ) return 1;
+            else if (src >= CU1 && src <= CU4 &&  v->type->is_unsigned && v->int_value >= 0 && (unsigned long) v->int_value < 0x100      ) return 1;
+            else if (src >= CU2 && src <= CU4 &&  v->type->is_unsigned && v->int_value >= 0 && (unsigned long) v->int_value < 0x100000   ) return 1;
             else if (src >= CU3 && src <= CU4 &&  v->type->is_unsigned && v->int_value >= 0 && v->int_value < 0x100000000) return 1;
             else if (              src == CU4 &&  v->type->is_unsigned)                                                    return 1;
 

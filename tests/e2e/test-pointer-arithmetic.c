@@ -230,7 +230,7 @@ void test_constant_pointer_subtraction_with_constant() {
     assert_long(-1,  ((void *)        0)   - 1,   "((void *)        0   + 1)");
     assert_long(-1,  ((void *)        0)   - 1L,  "((void *)        0   + 1L)");
     assert_long(-1,  ((void *)        0)   - 1U,  "((void *)        0   + 1U)");
-    // assert_long(-1,  ((void *)        0)   - 1UL, "((void *)        0   + 1UL)"); // TODO this test fails
+    assert_long(-1,  ((void *)        0)   - 1UL, "((void *)        0   + 1UL)"); // TODO this test fails
     assert_long(-1,  ((void *)        0L)  - 1,   "((void *)        0L  + 1)");
     assert_long(-1,  ((void *)        0U)  - 1,   "((void *)        0U  + 1)");
     assert_long(-1,  ((void *)        0UL) - 1,   "((void *)        0UL + 1)");
