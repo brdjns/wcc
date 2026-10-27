@@ -92,3 +92,6 @@ report(x>y, "x is %d but y is %d", x, y);
 
 #define named_va_args(FOO, BAR ...) printf(FOO, BAR)
 named_va_args("%s\n", "foo");
+
+#define TEST(b) a b##c
+TEST(d_)

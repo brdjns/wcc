@@ -1315,9 +1315,12 @@ static CppToken *subst(CppToken *is, StrMap *fp, CppToken **ap, StrSet *hs, CppT
                 // (empty) ## (empty) ...
                 return subst(cll_from_next(is, tok1), fp, ap, hs, os);
         }
-        else
+        else {
             // (replacement) ## ...
-            return subst(cll_from_next(is, tok), fp, ap, hs, concat_clls(os, dup_cll(replacement)));
+            CppToken *replacement_with_whitespace = dup_cll(replacement);
+            if (tok->whitespace) replacement_with_whitespace->whitespace = wstrdup(tok->whitespace);
+            return subst(cll_from_next(is, tok), fp, ap, hs, concat_clls(os, replacement_with_whitespace));
+        }
     }
 
     // FP
