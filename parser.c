@@ -2794,7 +2794,13 @@ void parse_struct_dot_arrow_expression(void) {
     // on a copied value. Otherwise, e.g. a struct function return result may not get
     // persisted to the stack this is needed for e.g. int i = return_struct().i;
     Value *v = dup_value(pop());
-    v->offset += member->offset;
+
+    if (v->is_constant)
+        // Deal with constants cast to a pointer to a struct
+        v->int_value += member->offset;
+    else
+        v->offset += member->offset;
+
     v->bit_field_offset = v->offset * 8 + (member->bit_field_offset & 7);
     v->bit_field_size = member->bit_field_size;
     v->type = dup_type(member->type);

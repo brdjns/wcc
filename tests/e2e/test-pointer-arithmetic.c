@@ -312,6 +312,16 @@ void test_struct_additions() {
     assert_long(32, (long) (s + 1), "struct additions 2");
     assert_long(16, (long) s++,     "struct additions 3");
     assert_long(48, (long) ++s,     "struct additions 4");
+
+    struct s {
+        long l;
+        long la[1];
+    } s2;
+
+    assert_int(8,  (int) &(((struct s *) 0)->la),    "struct additions 5");
+    assert_int(8,  (int) &(((struct s *) 0)->la[0]), "struct additions 6");
+    assert_int(16, (int) &(((struct s *) 0)->la[1]), "struct additions 7");
+
 }
 
 int main(int argc, char **argv) {
