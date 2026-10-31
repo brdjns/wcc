@@ -518,6 +518,7 @@ void next(void) {
             else if (!strcmp(cur_identifier, "extern"       )) { cur_token = TOK_EXTERN;    }
             else if (!strcmp(cur_identifier, "const"        )) { cur_token = TOK_CONST;     }
             else if (!strcmp(cur_identifier, "volatile"     )) { cur_token = TOK_VOLATILE;  }
+            else if (!strcmp(cur_identifier, "__volatile__" )) { cur_token = TOK_VOLATILE;  }
             else if (!strcmp(cur_identifier, "goto"         )) { cur_token = TOK_GOTO;      }
 
             else {
