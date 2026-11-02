@@ -646,6 +646,32 @@ void test_subtraction_with_different_sizes() {
     pl -= 3UL;      assert_long(0,  pl, "Pointer subtraction long UL");
 }
 
+struct s1 {
+    int i;
+    struct s1 *s1;
+};
+
+struct s2 {
+    int i;
+    struct s1 s1;
+};
+
+struct s2 gs2;
+struct s2 *s2 = &gs2;
+
+void test_address_of_lvalue_in_register() {
+    struct s1 *ps1 = &s2->s1;
+
+    s2->s1.i = 1;
+
+    assert_int(1, gs2.s1.i,       "Addresss of lvalue in register 1");
+    assert_int(1, ps1->i,         "Addresss of lvalue in register 2");
+    assert_int(1, &gs2.s1 == ps1, "Addresss of lvalue in register 3");
+
+    ps1->i = 2;
+    assert_int(2, gs2.s1.i,       "Addresss of lvalue in register 4");
+}
+
 int main(int argc, char **argv) {
     passes = 0;
     failures = 0;
@@ -683,6 +709,7 @@ int main(int argc, char **argv) {
     test_string_literal_in_eq();
     test_dereferencing_an_array();
     test_subtraction_with_different_sizes();
+    test_address_of_lvalue_in_register();
 
     finalize();
 }

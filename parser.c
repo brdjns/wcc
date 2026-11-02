@@ -1787,8 +1787,6 @@ static void add_simple_assignment_instruction(Value *dst, Value *src1, int enfor
     if (!dst->is_lvalue) error("Cannot assign to an rvalue");
     if (enforce_const && !type_is_modifiable(dst->type)) error("Cannot assign to read-only variable");
 
-    dst->is_lvalue = 1;
-
     check_simple_assignment_types(dst, src1);
 
     src1 = add_convert_type_if_needed(src1, dst->type);
@@ -2767,7 +2765,9 @@ static void parse___builtin_ctzll(void) { parse_builtin_bitscan(IR_BIT_SCAN_REV,
 void parse_struct_dot_arrow_expression(void) {
     // Struct/union member lookup
 
-    if (cur_token == TOK_DOT) {
+    int is_dot = cur_token == TOK_DOT;
+
+    if (is_dot) {
         if (vtop()->type->type != TYPE_STRUCT_OR_UNION) error("Can only use . on a struct or union");
         if (!vtop()->is_lvalue) error("Expected lvalue for struct . operation.");
     }
@@ -2776,8 +2776,6 @@ void parse_struct_dot_arrow_expression(void) {
         if (vtop()->type->target->type != TYPE_STRUCT_OR_UNION) error("Can only use -> on a pointer to a struct or union");
         if (is_incomplete_type(vtop()->type->target)) error("Dereferencing a pointer to incomplete struct or union");
     }
-
-    int is_dot = cur_token == TOK_DOT;
 
     next();
     consume(TOK_IDENTIFIER, "identifier");
@@ -2989,15 +2987,37 @@ static void parse_expression(int level) {
 
             Value *src1 = pop();
 
-            if (src1->is_constant)
+            if (src1->is_constant) {
                 // Special case of taking an address of a constant. This happens with
                 // the offsetof macro which does something like:
                 // define offsetof(STRUCTURE,FIELD) ((int) ((size_t)&((STRUCTURE*)0)->FIELD))
                 // e.g. (int) ((size_t) &((struct s *) 0)->m);
                 push_integral_constant(TYPE_LONG, src1->int_value + src1->offset);
+            }
 
             else {
-                add_ir_op(IR_ADDRESS_OF, make_pointer(src1->type), new_vreg(), src1, 0);
+                if (src1->is_lvalue && src1->vreg) {
+                    // The address of an lvalue in a register is simply that value,
+                    // but the types need changing
+
+                    Value *dst = dup_value(src1);
+                    dst->vreg = new_vreg();
+                    dst->is_lvalue = 0;
+                    dst->type = make_pointer(src1->type);
+
+                    Value *new_src1 = dup_value(src1);
+                    new_src1->is_lvalue = 0;
+                    new_src1->type = make_pointer(src1->type);
+
+                    add_parser_instruction(IR_MOVE, dst, new_src1, 0);
+                    push(dst);
+                    src1 = dst;
+                }
+                else {
+                    // It's a regul;ar indirect
+                    add_ir_op(IR_ADDRESS_OF, make_pointer(src1->type), new_vreg(), src1, 0);
+                }
+
                 if (src1->offset && src1->vreg) {
                     // Non-vreg offsets are outputted by codegen. For addresses in registers, it
                     // needs to be calculated.
