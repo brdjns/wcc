@@ -4,7 +4,12 @@ This project is an implementation of the full C89/C90 C specification for `aarch
 
 The [was assembler](https://github.com/freewilll/wbinutils/tree/master/was) and [wld linker](https://github.com/freewilll/wbinutils/tree/master/wld) can be used to produce object files by either running `configure` with `--as`, `--ld` or setting the `AS` and `LD` environment variables on `x86_64`.
 
-This compiler is a hobby project and even close to be ready for production use.
+This compiler is a hobby project and not even close to be ready for production use.
+
+Projects that compile successfully
+- wcc itself
+- Sqlite
+- Doom
 
 # Installation
 ```
